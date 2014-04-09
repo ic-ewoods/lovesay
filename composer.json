@@ -1,0 +1,12 @@
+{
+    "require" : {
+        "symfony/console": "~2.4",
+        "zendframework/zend-db": "~2.3"
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "autoload": {
+        "psr-0": {"": "src"}
+    }
+}
