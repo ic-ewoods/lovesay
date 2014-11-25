@@ -2,36 +2,68 @@
 
 namespace LoveSay;
 
+use LoveSay\API\NoteAPI;
+
 class NoteRepository
 {
+    /** @var NoteAPI */
+    private $note_api;
+
+    /**
+     * @param NoteAPI $note_api
+     */
+    public function __construct(NoteAPI $note_api)
+    {
+        $this->note_api = $note_api;
+    }
+
+    /**
+     * @param Note $note
+     *
+     * @return bool
+     */
+    public function addNote(Note $note)
+    {
+        return $this->note_api->putNote($note);
+    }
+
+    /**
+     * @param $note_id
+     *
+     * @return Note|null
+     */
+    public function getNote($note_id)
+    {
+        $note = $this->note_api->getNote($note_id);
+
+        return $note;
+    }
 
     /**
      * @return Note
      */
     public function getRandomNote()
     {
-        $say = array();
-        array_push($say, "You smile at me when I come home");
-        array_push($say, "You think steam punk is cool");
-        array_push($say, "You make awesome clothes for all of us");
-        array_push($say, "You support our family");
-        array_push($say, "You like spy movies");
-        array_push($say, "You make people’s ideas and dreams become real");
-        array_push($say, "You want me to do what will make me happy");
-        array_push($say, "You can make a fantastic dinner from virtually bare cupboards");
-        array_push($say, "You have grit – like 60 grit, not that lightweight 220 stuff");
-        array_push($say, "You’ll stay up late playing video games with me");
-        array_push($say, "You are the person I want to be with");
-        shuffle($say);
-
-        $note = new Note($say[0]);
+        $note_id = rand(1, $this->getCount());
+        $note = $this->note_api->getNote($note_id);
 
         return $note;
     }
 
-    public function addNote(Note $note)
+    /**
+     * @return int
+     */
+    public function getCount()
     {
-        return true;
+        return $this->note_api->getNoteCount();
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllNotes()
+    {
+        return $this->note_api->getAll();
     }
 
 }

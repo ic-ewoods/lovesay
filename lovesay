@@ -1,10 +1,31 @@
 #! /usr/bin/php
 <?php
-require __DIR__ . '/vendor/autoload.php';
 
-use LoveSay\CommandLine;
-use Symfony\Component\Console\Application;
+use Aura\Cli\CliFactory;
+use LoveSay\Note;
+use LoveSay\NoteRepository;
 
-$application = new Application();
-$application->add(new CommandLine);
-$application->run();
+require __DIR__ . '/bootstrap.php';
+
+$cli_factory = new CliFactory;
+$stdio = $cli_factory->newStdio();
+$context = $cli_factory->newContext($GLOBALS);
+
+$getopt = $context->getopt(array('all,a'));
+
+$intro_text = 'lovesay: ' . \LoveSay\Description::express();
+$stdio->outln($intro_text);
+
+$note_api = new \LoveSay\API\FileNotes(__DIR__ . '/say.sqlite3');
+$note_repository = new NoteRepository($note_api);
+
+if ($getopt->get('-a')) {
+    $notes = $note_repository->getAllNotes();
+    /** @var Note $note */
+    foreach ($notes as $note) {
+        $stdio->outln($note->getText());
+    }
+} else {
+    $random_note = $note_repository->getRandomNote();
+    $stdio->outln($random_note->getText());
+}
