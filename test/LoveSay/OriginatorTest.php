@@ -27,6 +27,15 @@ class OriginatorTest extends \PHPUnit_Framework_TestCase
     /**
      * @test
      */
+    public function canGetIdentifier()
+    {
+        $originator = new Originator('id');
+        $this->assertEquals('id', $originator->getIdentifier());
+    }
+
+    /**
+     * @test
+     */
     public function keyIsChecksum()
     {
         $originator = new Originator('name');
