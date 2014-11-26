@@ -3,9 +3,15 @@
 namespace LoveSay\API;
 
 use LoveSay\Note;
+use LoveSay\Originator;
 
 interface NoteAPI
 {
+
+    /**
+     * @return Originator
+     */
+    public function getNoteOriginator();
 
     /**
      * @return integer
@@ -13,7 +19,7 @@ interface NoteAPI
     public function getNoteCount();
 
     /**
-     * @param $id
+     * @param integer $id
      *
      * @return Note|null
      *
@@ -32,7 +38,12 @@ interface NoteAPI
     /**
      * @return array
      */
-    public function getAll();
+    public function getAllNotes();
+
+    /**
+     * @param array $say
+     */
+    public function load(array $say);
 
 }
  

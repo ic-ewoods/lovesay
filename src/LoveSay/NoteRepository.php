@@ -17,6 +17,13 @@ class NoteRepository
         $this->note_api = $note_api;
     }
 
+    public function createNote($message)
+    {
+        $note = new Note($message, $this->note_api->getNoteOriginator());
+
+        return $note;
+    }
+
     /**
      * @param Note $note
      *
@@ -28,13 +35,13 @@ class NoteRepository
     }
 
     /**
-     * @param $note_id
+     * @param $id
      *
      * @return Note|null
      */
-    public function getNote($note_id)
+    public function getNote($id)
     {
-        $note = $this->note_api->getNote($note_id);
+        $note = $this->note_api->getNote($id);
 
         return $note;
     }
@@ -44,10 +51,10 @@ class NoteRepository
      */
     public function getRandomNote()
     {
-        $note_id = rand(1, $this->getCount());
-        $note = $this->note_api->getNote($note_id);
+        $selection = rand(1, $this->getCount());
+        $notes = $this->getAllNotes();
 
-        return $note;
+        return $notes[$selection - 1];
     }
 
     /**
@@ -63,7 +70,8 @@ class NoteRepository
      */
     public function getAllNotes()
     {
-        return $this->note_api->getAll();
+        return $this->note_api->getAllNotes();
     }
+
 
 }

@@ -6,6 +6,7 @@ use LoveSay\API\InMemoryNotes;
 use LoveSay\API\NoteAPI;
 use LoveSay\Note;
 use LoveSay\NoteRepository;
+use LoveSay\Originator;
 
 class NoteRepositoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,29 +16,63 @@ class NoteRepositoryTest extends \PHPUnit_Framework_TestCase
     /** @var NoteAPI */
     private $note_api;
 
+    /** @var Originator | \PHPUnit_Framework_MockObject_MockObject */
+    private $originator;
+
+    public function setup()
+    {
+        $this->originator = $this->getMockBuilder('\LoveSay\Originator')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->originator->method('getKey')
+            ->willReturn(1);
+
+        $this->note_api = new InMemoryNotes($this->originator);
+        $this->repository = new NoteRepository($this->note_api);
+    }
+
     /**
      * @test
      */
     public function canBeInstantiated()
     {
-        $this->expectInMemoryNotes();
-        $repository = new NoteRepository($this->note_api);
+        $note_api = $this->getMockBuilder('\LoveSay\API\NoteAPI')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $repository = new NoteRepository($note_api);
         $this->assertInstanceOf('\LoveSay\NoteRepository', $repository);
     }
 
+    /**
+     * @test
+     */
+    public function canCreateNote()
+    {
+        $note = new Note("test", $this->originator);
+
+        $created_note = $this->repository->createNote("test");
+
+        $this->assertInstanceOf('\LoveSay\Note', $created_note);
+        $this->assertEquals($note->getKey(), $created_note->getKey());
+    }
+
+    /**
+     * @test
+     */
     public function canGetCount()
     {
-        $this->expectRepository();
+        $this->expectTwoNotes();
         $this->assertEquals(2, $this->repository->getCount());
     }
 
     /**
      * @test
      */
-    public function canGetGetNote()
+    public function canGetNote()
     {
-        $this->expectRepository();
-        $this->assertInstanceOf('\LoveSay\Note', $this->repository->getNote(1));
+        $this->expectTwoNotes();
+        $id = Note::checksum("Thing One" . 1);
+        $this->assertInstanceOf('\LoveSay\Note', $this->repository->getNote($id));
     }
 
     /**
@@ -45,7 +80,7 @@ class NoteRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function canGetRandomNote()
     {
-        $this->expectRepository();
+        $this->expectTwoNotes();
         $this->assertInstanceOf('\LoveSay\Note', $this->repository->getRandomNote());
     }
 
@@ -54,25 +89,23 @@ class NoteRepositoryTest extends \PHPUnit_Framework_TestCase
      */
     public function canAddNote()
     {
-        $this->expectRepository();
-        $note = new Note('Thing Three?');
+        $this->expectTwoNotes();
+        $note = new Note('Thing Three?', $this->originator);
+
+        $this->assertEquals(2, $this->repository->getCount());
+
         $this->repository->addNote($note);
         $this->assertEquals(3, $this->repository->getCount());
     }
 
-    private function expectRepository()
-    {
-        $this->expectInMemoryNotes();
-        $this->repository = new NoteRepository($this->note_api);
-    }
-
-    private function expectInMemoryNotes()
+    public function expectTwoNotes()
     {
         $say = array(
             "Thing One",
             "Thing Two"
         );
-        $this->note_api = new InMemoryNotes($say);
+        $this->note_api->load($say);
     }
+
 }
  

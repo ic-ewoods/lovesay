@@ -2,8 +2,10 @@
 <?php
 
 use Aura\Cli\CliFactory;
+use LoveSay\API\FileNotes;
 use LoveSay\Note;
 use LoveSay\NoteRepository;
+use LoveSay\Originator;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -16,7 +18,8 @@ $getopt = $context->getopt(array('all,a'));
 $intro_text = 'lovesay: ' . \LoveSay\Description::express();
 $stdio->outln($intro_text);
 
-$note_api = new \LoveSay\API\FileNotes(__DIR__ . '/say.sqlite3');
+$originator = new Originator('me');
+$note_api = new FileNotes($originator, array('filename' => __DIR__ . '/say.sqlite3'));
 $note_repository = new NoteRepository($note_api);
 
 if ($getopt->get('-a')) {

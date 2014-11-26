@@ -2,8 +2,9 @@
 <?php
 
 use Aura\Cli\CliFactory;
-use LoveSay\Note;
+use LoveSay\API\FileNotes;
 use LoveSay\NoteRepository;
+use LoveSay\Originator;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -13,14 +14,22 @@ $stdio = $cli_factory->newStdio();
 $intro_text = 'lovesay: ' . \LoveSay\Description::express();
 $stdio->outln($intro_text);
 
-$note_api = new \LoveSay\API\FileNotes(__DIR__ . '/say.sqlite3');
+$originator = new Originator('me');
+$note_api = new FileNotes($originator, array('filename' => __DIR__ . '/say.sqlite3'));
 $note_repository = new NoteRepository($note_api);
+
+$say = include __DIR__ . '/say.php';
+foreach ($say as $message) {
+    $note = $note_repository->createNote($message);
+    $note_id = $note_repository->addNote($note);
+    $stdio->outln("Added note: [id: {$note_id}] {$message}");
+}
 
 $stdio->out('Add a message: ');
 $message = trim($stdio->in());
 
 if (!empty($message)) {
-    $note = new Note($message);
+    $note = $note_repository->createNote($message);
     $note_id = $note_repository->addNote($note);
     $stdio->outln("Added note: [id: {$note_id}] {$message}");
 } else {
@@ -30,7 +39,7 @@ if (!empty($message)) {
 //function loadFile($filename) {
 //    $say = include $filename;
 //    foreach ($say as $message) {
-//        $note = new Note($message);
+//        $note = $note_repository->createNote($message);
 //        $note_id = $note_repository->addNote($note);
 //        $stdio->outln("Added note: [id: {$note_id}] {$message}");
 //    }
