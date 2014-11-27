@@ -2,9 +2,10 @@
 <?php
 
 use Aura\Cli\CliFactory;
-use LoveSay\API\FileNotes;
+use LoveSay\API\Notes;
 use LoveSay\NoteRepository;
 use LoveSay\Originator;
+use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -15,7 +16,7 @@ $intro_text = 'lovesay: ' . \LoveSay\Description::express();
 $stdio->outln($intro_text);
 
 $originator = new Originator('me');
-$note_api = new FileNotes($originator, array('filename' => __DIR__ . '/say.sqlite3'));
+$note_api = new Notes($originator, new SqliteNotesStorage(__DIR__ . '/say.sqlite3'));
 $note_repository = new NoteRepository($note_api);
 
 $say = include __DIR__ . '/say.php';

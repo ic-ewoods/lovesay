@@ -4,7 +4,6 @@ namespace LoveSay;
 
 class Originator 
 {
-    /** @var int */
     private $identifier;
 
     /**
@@ -20,18 +19,26 @@ class Originator
     }
 
     /**
-     * @return int
+     * @return mixed
      */
     public function getIdentifier()
     {
         return $this->identifier;
     }
 
+    /**
+     * @return int
+     */
     public function getKey()
     {
         return $this->checksum($this->identifier);
     }
 
+    /**
+     * @param $data
+     *
+     * @return int
+     */
     public static function checksum($data)
     {
         return crc32($data);

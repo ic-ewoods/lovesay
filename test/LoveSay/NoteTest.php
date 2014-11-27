@@ -26,7 +26,7 @@ class NoteTest extends \PHPUnit_Framework_TestCase
      */
     public function canBeInstantiated()
     {
-        $note = new Note('', $this->originator);
+        $note = new Note('', $this->originator->getKey());
         $this->assertInstanceOf('\LoveSay\Note', $note);
     }
 
@@ -48,9 +48,11 @@ class NoteTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(Note::checksum('test' . 1), $this->note->getKey());
     }
 
+    /** Expectations **************************************************** */
+
     private function expectNote($text)
     {
-        $this->note = new Note($text, $this->originator);
+        $this->note = new Note($text, $this->originator->getKey());
     }
 }
  

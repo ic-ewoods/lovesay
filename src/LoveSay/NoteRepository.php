@@ -2,26 +2,29 @@
 
 namespace LoveSay;
 
-use LoveSay\API\NoteAPI;
+use LoveSay\API\Notes;
 
 class NoteRepository
 {
-    /** @var NoteAPI */
-    private $note_api;
+    /** @var Notes */
+    private $notes_api;
 
     /**
-     * @param NoteAPI $note_api
+     * @param Notes $notes_api
      */
-    public function __construct(NoteAPI $note_api)
+    public function __construct(Notes $notes_api)
     {
-        $this->note_api = $note_api;
+        $this->notes_api = $notes_api;
     }
 
+    /**
+     * @param $message
+     *
+     * @return Note
+     */
     public function createNote($message)
     {
-        $note = new Note($message, $this->note_api->getNoteOriginator());
-
-        return $note;
+        return new Note($message, $this->notes_api->getOriginatorKey());
     }
 
     /**
@@ -31,7 +34,7 @@ class NoteRepository
      */
     public function addNote(Note $note)
     {
-        return $this->note_api->putNote($note);
+        return $this->notes_api->putNote($note);
     }
 
     /**
@@ -41,20 +44,7 @@ class NoteRepository
      */
     public function getNote($id)
     {
-        $note = $this->note_api->getNote($id);
-
-        return $note;
-    }
-
-    /**
-     * @return Note
-     */
-    public function getRandomNote()
-    {
-        $selection = rand(1, $this->getCount());
-        $notes = $this->getAllNotes();
-
-        return $notes[$selection - 1];
+        return $this->notes_api->getNote($id);
     }
 
     /**
@@ -62,15 +52,15 @@ class NoteRepository
      */
     public function getCount()
     {
-        return $this->note_api->getNoteCount();
+        return $this->notes_api->getNoteCount();
     }
 
     /**
-     * @return array
+     * @return NoteCollection
      */
     public function getAllNotes()
     {
-        return $this->note_api->getAllNotes();
+        return $this->notes_api->getAllNotes();
     }
 
 
