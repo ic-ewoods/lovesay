@@ -66,7 +66,7 @@ class SqliteNotesStorage implements NotesStorage
     /**
      * @param int $originator_key
      *
-     * @return NoteCollection
+     * @return array
      */
     public function fetchAll($originator_key)
     {
@@ -75,12 +75,7 @@ class SqliteNotesStorage implements NotesStorage
 
         $notes = $this->pdo->fetchObjects($select, $select->getBindValues());
 
-        $all_notes = new NoteCollection();
-        foreach ($notes as $note_data) {
-            $all_notes->add(new Note($note_data->message, $originator_key));
-        }
-
-        return $all_notes;
+        return $notes;
     }
 
     /**

@@ -3,7 +3,6 @@
 
 use Aura\Cli\CliFactory;
 use LoveSay\API\Notes;
-use LoveSay\NoteRepository;
 use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
 
@@ -20,14 +19,14 @@ $stdio->outln($intro_text);
 
 $originator = new Originator('me');
 $note_api = new Notes($originator, new SqliteNotesStorage(__DIR__ . '/say.sqlite3'));
-$note_repository = new NoteRepository($note_api);
 
 if ($getopt->get('-a')) {
-    $notes = $note_repository->getAllNotes();
+    $notes = $note_api->getAllNotes();
     foreach ($notes as $note) {
         $stdio->outln($note->getText());
     }
 } else {
-    $random_note = $note_repository->getRandomNote();
+    $freshness = new \LoveSay\Freshness\True();
+    $random_note = $note_api->getFreshNote($freshness);
     $stdio->outln($random_note->getText());
 }

@@ -10,13 +10,13 @@ class Note
     private $originator_key;
 
     /**
-     * @param string $text
      * @param int    $originator_key
+     * @param string $text
      */
-    public function __construct($text, $originator_key)
+    public function __construct($originator_key, $text)
     {
-        $this->text = $text;
         $this->originator_key = $originator_key;
+        $this->text = $text;
     }
 
     /**

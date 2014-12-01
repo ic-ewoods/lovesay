@@ -46,7 +46,7 @@ class Notes
     public function getNote($id)
     {
         if ($note_data = $this->storage->fetchObject($this->originator_key, $id)) {
-            return new Note($note_data->message, $this->originator_key);
+            return new Note($this->originator_key, $note_data->message);
         }
 
         return null;
@@ -70,7 +70,14 @@ class Notes
      */
     public function getAllNotes()
     {
-        return $this->storage->fetchAll($this->originator_key);
+        $notes = $this->storage->fetchAll($this->originator_key);
+
+        $all_notes = new NoteCollection();
+        /** @var object $note_data */
+        foreach ($notes as $note_data) {
+            $all_notes->add(new Note($this->originator_key, $note_data->message));
+        }
+        return $all_notes;
     }
 
     /**
@@ -80,7 +87,14 @@ class Notes
      */
     public function getFreshNote(FreshnessService $freshness)
     {
-        // TODO: Implement getFreshNote() method.
+        $all_notes = $this->getAllNotes();
+        $max_note = $all_notes->count() - 1;
+
+        do {
+            $note = $all_notes[rand(0, $max_note)];
+        } while (!$freshness->isFresh(($note)));
+
+        return $note;
     }
 
     /**
@@ -89,7 +103,7 @@ class Notes
     public function importFromArray(array $messages)
     {
         foreach ($messages as $message) {
-            $note = new Note($message, $this->originator_key);
+            $note = new Note($this->originator_key, $message);
             $this->putNote($note);
         }
     }
