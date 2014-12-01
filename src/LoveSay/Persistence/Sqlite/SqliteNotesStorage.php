@@ -4,8 +4,6 @@ namespace LoveSay\Persistence\Sqlite;
 
 use Aura\Sql\ExtendedPdo;
 use Aura\SqlQuery\QueryFactory;
-use LoveSay\Note;
-use LoveSay\NoteCollection;
 use LoveSay\Persistence\NotesStorage;
 
 class SqliteNotesStorage implements NotesStorage
@@ -26,9 +24,10 @@ class SqliteNotesStorage implements NotesStorage
         $this->query_factory = new QueryFactory('sqlite');
 
         $this->pdo->exec("CREATE TABLE IF NOT EXISTS notes (
-                      id INTEGER PRIMARY KEY,
+                      note_key INTEGER PRIMARY KEY,
                       originator_key INTEGER,
-                      message TEXT
+                      message TEXT,
+                      view_count INTEGER
                       )");
     }
 
@@ -49,14 +48,14 @@ class SqliteNotesStorage implements NotesStorage
 
     /**
      * @param int $originator_key
-     * @param int $id
+     * @param int $note_key
      *
      * @return object
      */
-    public function fetchObject($originator_key, $id)
+    public function fetchObject($originator_key, $note_key)
     {
         $select = $this->query_factory->newSelect();
-        $select->cols(array('message'))->from('notes')->where('id = ?', $id)->where('originator_key = ?', $originator_key);
+        $select->cols(array('message', 'view_count'))->from('notes')->where('note_key = ?', $note_key)->where('originator_key = ?', $originator_key);
 
         $note_data = $this->pdo->fetchObject($select, $select->getBindValues());
 
@@ -71,7 +70,7 @@ class SqliteNotesStorage implements NotesStorage
     public function fetchAll($originator_key)
     {
         $select = $this->query_factory->newSelect();
-        $select->cols(array('message'))->from('notes')->where('originator_key = ?', $originator_key);
+        $select->cols(array('message', 'view_count'))->from('notes')->where('originator_key = ?', $originator_key);
 
         $notes = $this->pdo->fetchObjects($select, $select->getBindValues());
 
@@ -80,17 +79,18 @@ class SqliteNotesStorage implements NotesStorage
 
     /**
      * @param int $originator_key
-     * @param int $id
+     * @param int $note_key
      * @param string $message
      *
      * @return int
      */
-    public function store($originator_key, $id, $message)
+    public function store($originator_key, $note_key, $message, $view_count = 0)
     {
         $data_mapping = array(
-            'id'             => $id,
+            'note_key'       => $note_key,
             'originator_key' => $originator_key,
-            'message'        => $message
+            'message'        => $message,
+            'view_count'     => $view_count
         );
 
         $insert = $this->query_factory->newInsert();
@@ -100,4 +100,23 @@ class SqliteNotesStorage implements NotesStorage
 
         return $this->pdo->lastInsertId();
     }
-} 
+
+    /**
+     * @param int $originator_key
+     * @param int $note_key
+     *
+     * @return int
+     */
+    public function incrementViewCount($originator_key, $note_key)
+    {
+        $update = $this->query_factory->newUpdate();
+        $update->table('notes')->set('view_count', 'view_count + 1');
+        $update->where('originator_key = ?', $originator_key)->where('note_key = ?', $note_key);
+
+        $this->pdo->perform($update, $update->getBindValues());
+
+        $note_data = $this->fetchObject($originator_key, $note_key);
+
+        return $note_data->view_count;
+    }
+}

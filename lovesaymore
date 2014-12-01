@@ -11,29 +11,39 @@ require __DIR__ . '/bootstrap.php';
 
 $cli_factory = new CliFactory;
 $stdio = $cli_factory->newStdio();
+$context = $cli_factory->newContext($GLOBALS);
+
+$getopt = $context->getopt(array('r:'));
 
 $intro_text = 'lovesay: ' . \LoveSay\Description::express();
 $stdio->outln($intro_text);
 
 $originator = new Originator('me');
-$note_api = new Notes($originator, new SqliteNotesStorage(__DIR__ . '/say.sqlite3'));
+$storage_filename = __DIR__ . '/say.sqlite3';
 
-$stdio->out('Add a note: ');
-$message = trim($stdio->in());
-
-if (!empty($message)) {
-    $note = new Note($originator, $message);
-    $note_id = $note_api->putNote($note);
-    $stdio->outln("Added note: [id: {$note_id}] {$message}");
+if ($import_filename = $getopt->get('-r')) {
+    if (!is_readable($import_filename)) {
+        $stdio->errln('Could not read import file');
+        exit;
+    }
+    unlink($storage_filename);
+    $note_api = new Notes($originator, new SqliteNotesStorage($storage_filename));
+    $say = include $import_filename;
+    foreach ($say as $message) {
+        $note = new Note($originator->getKey(), $message);
+        $note_key = $note_api->putNote($note);
+        $stdio->outln("Added note: [key: {$note_key}] {$message}");
+    }
 } else {
-    $stdio->outln("No message added");
-}
+    $note_api = new Notes($originator, new SqliteNotesStorage($storage_filename));
+    $stdio->out('Add a note: ');
+    $message = trim($stdio->in());
 
-//function loadFile($filename) {
-//    $say = include $filename;
-//    foreach ($say as $message) {
-//        $note = new Note($originator, $message);
-//        $note_id = $note_api->putNote($note);
-//        $stdio->outln("Added note: [id: {$note_id}] {$message}");
-//    }
-//}
+    if (!empty($message)) {
+        $note = new Note($originator->getKey(), $message);
+        $note_key = $note_api->putNote($note);
+        $stdio->outln("Added note: [key: {$note_key}] {$message}");
+    } else {
+        $stdio->outln("No message added");
+    }
+}

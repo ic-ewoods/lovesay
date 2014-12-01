@@ -5,26 +5,26 @@ namespace LoveSay;
 class Note
 {
     /** @var string */
-    private $text;
+    private $message;
     /** @var int */
     private $originator_key;
 
     /**
      * @param int    $originator_key
-     * @param string $text
+     * @param string $message
      */
-    public function __construct($originator_key, $text)
+    public function __construct($originator_key, $message)
     {
         $this->originator_key = $originator_key;
-        $this->text = $text;
+        $this->message = $message;
     }
 
     /**
      * @return string
      */
-    public function getText()
+    public function message()
     {
-        return $this->text;
+        return $this->message;
     }
 
     /**
@@ -32,7 +32,7 @@ class Note
      */
     public function getKey()
     {
-        return $this->checksum($this->getText() . $this->originator_key);
+        return $this->checksum($this->message() . $this->originator_key);
     }
 
     /**
@@ -50,6 +50,6 @@ class Note
      */
     function __toString()
     {
-        return $this->getText();
+        return $this->message();
     }
 }

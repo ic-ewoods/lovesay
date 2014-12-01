@@ -39,13 +39,13 @@ class Notes
     }
 
     /**
-     * @param int $id
+     * @param int $note_key
      *
      * @return Note|null
      */
-    public function getNote($id)
+    public function getNote($note_key)
     {
-        if ($note_data = $this->storage->fetchObject($this->originator_key, $id)) {
+        if ($note_data = $this->storage->fetchObject($this->originator_key, $note_key)) {
             return new Note($this->originator_key, $note_data->message);
         }
 
@@ -59,10 +59,10 @@ class Notes
      */
     public function putNote(Note $note)
     {
-        $id = $note->getKey();
-        $message = $note->getText();
+        $note_key = $note->getKey();
+        $message = $note->message();
 
-        return $this->storage->store($this->originator_key, $id, $message);
+        return $this->storage->store($this->originator_key, $note_key, $message);
     }
 
     /**
@@ -85,7 +85,7 @@ class Notes
      *
      * @return Note
      */
-    public function getFreshNote(FreshnessService $freshness)
+    public function viewNote(FreshnessService $freshness)
     {
         $all_notes = $this->getAllNotes();
         $max_note = $all_notes->count() - 1;
@@ -93,6 +93,8 @@ class Notes
         do {
             $note = $all_notes[rand(0, $max_note)];
         } while (!$freshness->isFresh(($note)));
+
+        $this->storage->incrementViewCount($this->originator_key, $note->getKey());
 
         return $note;
     }

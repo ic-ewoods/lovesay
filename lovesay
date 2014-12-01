@@ -23,10 +23,10 @@ $note_api = new Notes($originator, new SqliteNotesStorage(__DIR__ . '/say.sqlite
 if ($getopt->get('-a')) {
     $notes = $note_api->getAllNotes();
     foreach ($notes as $note) {
-        $stdio->outln($note->getText());
+        $stdio->outln($note);
     }
 } else {
     $freshness = new \LoveSay\Freshness\True();
-    $random_note = $note_api->getFreshNote($freshness);
-    $stdio->outln($random_note->getText());
+    $note = $note_api->viewNote($freshness);
+    $stdio->outln($note);
 }

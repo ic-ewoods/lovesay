@@ -36,7 +36,7 @@ class NoteTest extends \PHPUnit_Framework_TestCase
     public function canGetText()
     {
         $this->expectNote('test note');
-        $this->assertEquals('test note', $this->note->getText());
+        $this->assertEquals('test note', $this->note->message());
     }
 
     /**
@@ -50,9 +50,12 @@ class NoteTest extends \PHPUnit_Framework_TestCase
 
     /** Expectations **************************************************** */
 
-    private function expectNote($text)
+    /**
+     * @param $message
+     */
+    private function expectNote($message)
     {
-        $this->note = new Note($this->originator->getKey(), $text);
+        $this->note = new Note($this->originator->getKey(), $message);
     }
 }
  

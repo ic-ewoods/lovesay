@@ -29,8 +29,8 @@ class OriginatorTest extends \PHPUnit_Framework_TestCase
      */
     public function canGetIdentifier()
     {
-        $originator = new Originator('id');
-        $this->assertEquals('id', $originator->getIdentifier());
+        $originator = new Originator('identifier');
+        $this->assertEquals('identifier', $originator->getIdentifier());
     }
 
     /**

@@ -74,8 +74,8 @@ class NotesTest extends \PHPUnit_Framework_TestCase
     public function canGetNote()
     {
         $this->expectTwoNotes();
-        $id = Note::checksum("Thing One" . 1);
-        $this->assertInstanceOf('\LoveSay\Note', $this->notes_api->getNote($id));
+        $note_key = Note::checksum("Thing One" . 1);
+        $this->assertInstanceOf('\LoveSay\Note', $this->notes_api->getNote($note_key));
     }
 
     /**
