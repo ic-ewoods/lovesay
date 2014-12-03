@@ -46,7 +46,7 @@ class Notes
     public function getNote($note_key)
     {
         if ($note_data = $this->storage->fetchObject($this->originator_key, $note_key)) {
-            return new Note($this->originator_key, $note_data->message);
+            return new Note($this->originator_key, $note_data->message, $note_data->view_count);
         }
 
         return null;
@@ -75,7 +75,7 @@ class Notes
         $all_notes = new NoteCollection();
         /** @var object $note_data */
         foreach ($notes as $note_data) {
-            $all_notes->add(new Note($this->originator_key, $note_data->message));
+            $all_notes->add(new Note($this->originator_key, $note_data->message, $note_data->view_count));
         }
         return $all_notes;
     }
@@ -94,7 +94,8 @@ class Notes
             $note = $all_notes[rand(0, $max_note)];
         } while (!$freshness->isFresh(($note)));
 
-        $this->storage->incrementViewCount($this->originator_key, $note->getKey());
+        $note->incrementViewCount();
+        $this->storage->update($this->originator_key, $note);
 
         return $note;
     }

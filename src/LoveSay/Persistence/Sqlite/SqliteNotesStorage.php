@@ -4,6 +4,7 @@ namespace LoveSay\Persistence\Sqlite;
 
 use Aura\Sql\ExtendedPdo;
 use Aura\SqlQuery\QueryFactory;
+use LoveSay\Note;
 use LoveSay\Persistence\NotesStorage;
 
 class SqliteNotesStorage implements NotesStorage
@@ -78,9 +79,10 @@ class SqliteNotesStorage implements NotesStorage
     }
 
     /**
-     * @param int $originator_key
-     * @param int $note_key
+     * @param int    $originator_key
+     * @param int    $note_key
      * @param string $message
+     * @param int    $view_count
      *
      * @return int
      */
@@ -102,20 +104,27 @@ class SqliteNotesStorage implements NotesStorage
     }
 
     /**
-     * @param int $originator_key
-     * @param int $note_key
+     * @param int      $originator_key
+     * @param Note     $note
      *
      * @return int
      */
-    public function incrementViewCount($originator_key, $note_key)
+    public function update($originator_key, Note $note)
     {
+        $data_binding = array(
+            'message'        => $note->message(),
+            'view_count'     => $note->viewCount(),
+            'originator_key' => $originator_key,
+            'note_key'       => $note->getKey()
+        );
+
         $update = $this->query_factory->newUpdate();
-        $update->table('notes')->set('view_count', 'view_count + 1');
-        $update->where('originator_key = ?', $originator_key)->where('note_key = ?', $note_key);
+        $update->table('notes')->cols(array('message', 'view_count'));
+        $update->where('originator_key = :originator_key')->where('note_key = :note_key');
 
-        $this->pdo->perform($update, $update->getBindValues());
+        $this->pdo->perform($update, $data_binding);
 
-        $note_data = $this->fetchObject($originator_key, $note_key);
+        $note_data = $this->fetchObject($originator_key, $note->getKey());
 
         return $note_data->view_count;
     }

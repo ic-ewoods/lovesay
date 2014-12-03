@@ -3,6 +3,7 @@
 namespace test\LoveSay\API;
 
 use LoveSay\API\Notes;
+use LoveSay\Freshness\True;
 use LoveSay\Note;
 use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
@@ -86,6 +87,16 @@ class NotesTest extends \PHPUnit_Framework_TestCase
         $this->expectTwoNotes();
         $notes = $this->notes_api->getAllNotes();
         $this->assertEquals(2, $notes->count());
+    }
+
+    /**
+     * @test
+     */
+    public function willGetFreshNote()
+    {
+        $this->expectTwoNotes();
+        $note = $this->notes_api->viewNote(new True());
+        $this->assertInstanceOf('\LoveSay\Note', $note);
     }
 
     /** Expectations **************************************************** */

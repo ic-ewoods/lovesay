@@ -2,6 +2,8 @@
 
 namespace LoveSay\Persistence;
 
+use LoveSay\Note;
+
 interface NotesStorage
 {
     /**
@@ -27,20 +29,22 @@ interface NotesStorage
     public function fetchAll($originator_key);
 
     /**
-     * @param int $originator_key
-     * @param int $note_key
+     * @param int    $originator_key
+     * @param int    $note_key
      * @param string $message
+     * @param int    $view_count
      *
      * @return int
      */
-    public function store($originator_key, $note_key, $message);
+    public function store($originator_key, $note_key, $message, $view_count = 0);
 
 
     /**
-     * @param int $originator_key
-     * @param int $note_key
+     * @param int  $originator_key
+     * @param Note $note
      *
      * @return int
      */
-    public function incrementViewCount($originator_key, $note_key);
+    public function update($originator_key, Note $note);
+
 } 
