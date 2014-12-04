@@ -11,7 +11,7 @@ interface NotesStorage
      *
      * @return int
      */
-    public function fetchCount($originator_key);
+    public function count($originator_key);
 
     /**
      * @param $originator_key
@@ -19,7 +19,7 @@ interface NotesStorage
      *
      * @return object
      */
-    public function fetchObject($originator_key, $note_key);
+    public function fetch($originator_key, $note_key);
 
     /**
      * @param int $originator_key
@@ -29,14 +29,14 @@ interface NotesStorage
     public function fetchAll($originator_key);
 
     /**
-     * @param int    $originator_key
-     * @param int    $note_key
-     * @param string $message
-     * @param int    $view_count
+     * @param int   $originator_key
+     * @param array $note_data
+     *
+     * @internal param Note $note
      *
      * @return int
      */
-    public function store($originator_key, $note_key, $message, $view_count = 0);
+    public function store($originator_key, array $note_data);
 
 
     /**

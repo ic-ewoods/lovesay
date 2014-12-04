@@ -4,7 +4,7 @@ namespace LoveSay\Freshness;
 
 use LoveSay\Note;
 
-class True implements FreshnessService
+class Any implements FreshnessService
 {
 
     /**

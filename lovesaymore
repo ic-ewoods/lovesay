@@ -2,7 +2,7 @@
 <?php
 
 use Aura\Cli\CliFactory;
-use LoveSay\API\Notes;
+use LoveSay\API\NoteWriterService;
 use LoveSay\Note;
 use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
@@ -27,7 +27,7 @@ if ($import_filename = $getopt->get('-r')) {
         exit;
     }
     unlink($storage_filename);
-    $note_api = new Notes($originator, new SqliteNotesStorage($storage_filename));
+    $note_api = new NoteWriterService($originator, new SqliteNotesStorage($storage_filename));
     $say = include $import_filename;
     foreach ($say as $message) {
         $note = new Note($originator->getKey(), $message);
@@ -35,7 +35,7 @@ if ($import_filename = $getopt->get('-r')) {
         $stdio->outln("Added note: [key: {$note_key}] {$message}");
     }
 } else {
-    $note_api = new Notes($originator, new SqliteNotesStorage($storage_filename));
+    $note_api = new NoteWriterService($originator, new SqliteNotesStorage($storage_filename));
     $stdio->out('Add a note: ');
     $message = trim($stdio->in());
 

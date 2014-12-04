@@ -2,17 +2,17 @@
 
 namespace test\LoveSay\API;
 
-use LoveSay\API\Notes;
-use LoveSay\Freshness\True;
+use LoveSay\API\NoteWriterService;
+use LoveSay\Freshness\Any;
 use LoveSay\Note;
 use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
 
-class NotesTest extends \PHPUnit_Framework_TestCase
+class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
 {
 
-    /** @var Notes */
-    private $notes_api;
+    /** @var NoteWriterService */
+    private $note_writer_api;
 
     /** @var Originator | \PHPUnit_Framework_MockObject_MockObject */
     private $originator;
@@ -34,7 +34,7 @@ class NotesTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->notes_api = new Notes($this->originator, new SqliteNotesStorage());
+        $this->note_writer_api = new NoteWriterService($this->originator, new SqliteNotesStorage());
     }
 
     /**
@@ -42,8 +42,8 @@ class NotesTest extends \PHPUnit_Framework_TestCase
      */
     public function canBeInstantiated()
     {
-        $notes_api = new Notes($this->originator, $this->storage);
-        $this->assertInstanceOf('\LoveSay\API\Notes', $notes_api);
+        $notes_api = new NoteWriterService($this->originator, $this->storage);
+        $this->assertInstanceOf('\LoveSay\API\NoteWriterService', $notes_api);
     }
 
     /**
@@ -52,7 +52,7 @@ class NotesTest extends \PHPUnit_Framework_TestCase
     public function canGetCount()
     {
         $this->expectTwoNotes();
-        $this->assertEquals(2, $this->notes_api->getNoteCount());
+        $this->assertEquals(2, $this->note_writer_api->getCount());
     }
 
     /**
@@ -63,10 +63,10 @@ class NotesTest extends \PHPUnit_Framework_TestCase
         $this->expectTwoNotes();
         $note = new Note($this->originator->getKey(), 'Thing Three?');
 
-        $this->assertEquals(2, $this->notes_api->getNoteCount());
+        $this->assertEquals(2, $this->note_writer_api->getCount());
 
-        $this->notes_api->putNote($note);
-        $this->assertEquals(3, $this->notes_api->getNoteCount());
+        $this->note_writer_api->putNote($note);
+        $this->assertEquals(3, $this->note_writer_api->getCount());
     }
 
     /**
@@ -76,7 +76,7 @@ class NotesTest extends \PHPUnit_Framework_TestCase
     {
         $this->expectTwoNotes();
         $note_key = Note::checksum("Thing One" . 1);
-        $this->assertInstanceOf('\LoveSay\Note', $this->notes_api->getNote($note_key));
+        $this->assertInstanceOf('\LoveSay\Note', $this->note_writer_api->getNote($note_key));
     }
 
     /**
@@ -85,29 +85,20 @@ class NotesTest extends \PHPUnit_Framework_TestCase
     public function canGetAllNotes()
     {
         $this->expectTwoNotes();
-        $notes = $this->notes_api->getAllNotes();
+        $notes = $this->note_writer_api->getAllNotes();
         $this->assertEquals(2, $notes->count());
     }
 
-    /**
-     * @test
-     */
-    public function willGetFreshNote()
-    {
-        $this->expectTwoNotes();
-        $note = $this->notes_api->viewNote(new True());
-        $this->assertInstanceOf('\LoveSay\Note', $note);
-    }
 
     /** Expectations **************************************************** */
 
     public function expectTwoNotes()
     {
-        $say = array(
+        $messages = array(
             "Thing One",
             "Thing Two"
         );
-        $this->notes_api->importFromArray($say);
+        $this->note_writer_api->importFromArray($messages);
     }
 
 }

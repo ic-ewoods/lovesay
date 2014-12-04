@@ -37,7 +37,7 @@ class SqliteNotesStorage implements NotesStorage
      *
      * @return int
      */
-    public function fetchCount($originator_key)
+    public function count($originator_key)
     {
         $select = $this->query_factory->newSelect();
         $select->cols(array('COUNT(*) AS count'))->from('notes')->where('originator_key = ?', $originator_key);
@@ -53,7 +53,7 @@ class SqliteNotesStorage implements NotesStorage
      *
      * @return object
      */
-    public function fetchObject($originator_key, $note_key)
+    public function fetch($originator_key, $note_key)
     {
         $select = $this->query_factory->newSelect();
         $select->cols(array('message', 'view_count'))->from('notes')->where('note_key = ?', $note_key)->where('originator_key = ?', $originator_key);
@@ -79,24 +79,19 @@ class SqliteNotesStorage implements NotesStorage
     }
 
     /**
-     * @param int    $originator_key
-     * @param int    $note_key
-     * @param string $message
-     * @param int    $view_count
+     * @param int   $originator_key
+     * @param array $note_data
      *
      * @return int
      */
-    public function store($originator_key, $note_key, $message, $view_count = 0)
+    public function store($originator_key, array $note_data)
     {
-        $data_mapping = array(
-            'note_key'       => $note_key,
-            'originator_key' => $originator_key,
-            'message'        => $message,
-            'view_count'     => $view_count
-        );
+        $note_data['originator_key'] = $originator_key;
+        $cols = array('note_key', 'originator_key', 'message', 'view_count');
+        $col_mapping = array_intersect_key($note_data, array_flip($cols));
 
         $insert = $this->query_factory->newInsert();
-        $insert->into('notes')->cols($data_mapping);
+        $insert->into('notes')->cols($col_mapping);
 
         $this->pdo->perform($insert, $insert->getBindValues());
 
@@ -124,7 +119,7 @@ class SqliteNotesStorage implements NotesStorage
 
         $this->pdo->perform($update, $data_binding);
 
-        $note_data = $this->fetchObject($originator_key, $note->getKey());
+        $note_data = $this->fetch($originator_key, $note->getKey());
 
         return $note_data->view_count;
     }

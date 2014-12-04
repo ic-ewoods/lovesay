@@ -2,9 +2,11 @@
 <?php
 
 use Aura\Cli\CliFactory;
-use LoveSay\API\Notes;
+use LoveSay\API\NoteReaderService;
+use LoveSay\API\NoteWriterService;
 use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
+use LoveSay\Recipient;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -17,18 +19,21 @@ $getopt = $context->getopt(array('all,a'));
 $intro_text = 'lovesay: ' . \LoveSay\Description::express();
 $stdio->outln($intro_text);
 
+$storage = new SqliteNotesStorage(__DIR__ . '/say.sqlite3');
 $originator = new Originator('me');
-$note_api = new Notes($originator, new SqliteNotesStorage(__DIR__ . '/say.sqlite3'));
+$note_writer_api = new NoteWriterService($originator, $storage);
+$recipient = new Recipient('you');
+$note_reader_api = new NoteReaderService($recipient, $storage);
 
 if ($getopt->get('-a')) {
-    $notes = $note_api->getAllNotes();
+    $notes = $note_writer_api->getAllNotes();
     foreach ($notes as $note) {
         $view_count = $getopt->get('-c', false) ? " [{$note->viewCount()}]" : '';
         $stdio->outln($note . $view_count);
     }
 } else {
-    $freshness = new \LoveSay\Freshness\True();
-    $note = $note_api->viewNote($freshness);
+    $freshness = new \LoveSay\Freshness\Any();
+    $note = $note_reader_api->viewNote($freshness);
     $view_count = $getopt->get('-c', false) ? " [{$note->viewCount()}]" : '';
     $stdio->outln($note . $view_count);
 }
