@@ -1,7 +1,10 @@
-<?php
-
-require __DIR__ . 'bootstrap.php';
-
-
-include __DIR__ . '/tpl/master.tpl.php';
-
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>LoveSay</title>
+</head>
+<body>
+<p>Azure Test - PHP</p>
+</body>
+</html>
