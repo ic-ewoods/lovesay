@@ -26,21 +26,21 @@ class SqliteNotesStorage implements NotesStorage
 
         $this->pdo->exec("CREATE TABLE IF NOT EXISTS notes (
                       note_key INTEGER PRIMARY KEY,
-                      originator_key INTEGER,
+                      relationship_key INTEGER,
                       message TEXT,
                       view_count INTEGER
                       )");
     }
 
     /**
-     * @param int $originator_key
+     * @param int $relationship_key
      *
      * @return int
      */
-    public function count($originator_key)
+    public function count($relationship_key)
     {
         $select = $this->query_factory->newSelect();
-        $select->cols(array('COUNT(*) AS count'))->from('notes')->where('originator_key = ?', $originator_key);
+        $select->cols(array('COUNT(*) AS count'))->from('notes')->where('relationship_key = ?', $relationship_key);
 
         $count = $this->pdo->fetchValue($select, $select->getBindValues());
 
@@ -48,15 +48,18 @@ class SqliteNotesStorage implements NotesStorage
     }
 
     /**
-     * @param int $originator_key
+     * @param int $relationship_key
      * @param int $note_key
      *
      * @return object
      */
-    public function fetch($originator_key, $note_key)
+    public function fetch($relationship_key, $note_key)
     {
         $select = $this->query_factory->newSelect();
-        $select->cols(array('message', 'view_count'))->from('notes')->where('note_key = ?', $note_key)->where('originator_key = ?', $originator_key);
+        $select->cols(array(
+                'message',
+                'view_count'
+            ))->from('notes')->where('note_key = ?', $note_key)->where('relationship_key = ?', $relationship_key);
 
         $note_data = $this->pdo->fetchObject($select, $select->getBindValues());
 
@@ -64,14 +67,14 @@ class SqliteNotesStorage implements NotesStorage
     }
 
     /**
-     * @param int $originator_key
+     * @param int $relationship_key
      *
      * @return array
      */
-    public function fetchAll($originator_key)
+    public function fetchAll($relationship_key)
     {
         $select = $this->query_factory->newSelect();
-        $select->cols(array('message', 'view_count'))->from('notes')->where('originator_key = ?', $originator_key);
+        $select->cols(array('message', 'view_count'))->from('notes')->where('relationship_key = ?', $relationship_key);
 
         $notes = $this->pdo->fetchObjects($select, $select->getBindValues());
 
@@ -79,15 +82,15 @@ class SqliteNotesStorage implements NotesStorage
     }
 
     /**
-     * @param int   $originator_key
+     * @param int   $relationship_key
      * @param array $note_data
      *
      * @return int
      */
-    public function store($originator_key, array $note_data)
+    public function store($relationship_key, array $note_data)
     {
-        $note_data['originator_key'] = $originator_key;
-        $cols = array('note_key', 'originator_key', 'message', 'view_count');
+        $note_data['relationship_key'] = $relationship_key;
+        $cols = array('note_key', 'relationship_key', 'message', 'view_count');
         $col_mapping = array_intersect_key($note_data, array_flip($cols));
 
         $insert = $this->query_factory->newInsert();
@@ -99,27 +102,27 @@ class SqliteNotesStorage implements NotesStorage
     }
 
     /**
-     * @param int      $originator_key
-     * @param Note     $note
+     * @param int  $relationship_key
+     * @param Note $note
      *
      * @return int
      */
-    public function update($originator_key, Note $note)
+    public function update($relationship_key, Note $note)
     {
         $data_binding = array(
-            'message'        => $note->message(),
-            'view_count'     => $note->viewCount(),
-            'originator_key' => $originator_key,
-            'note_key'       => $note->getKey()
+            'message'          => $note->getMessage(),
+            'view_count'       => $note->getViewCount(),
+            'relationship_key' => $relationship_key,
+            'note_key'         => $note->getKey()
         );
 
         $update = $this->query_factory->newUpdate();
         $update->table('notes')->cols(array('message', 'view_count'));
-        $update->where('originator_key = :originator_key')->where('note_key = :note_key');
+        $update->where('relationship_key = :relationship_key')->where('note_key = :note_key');
 
         $this->pdo->perform($update, $data_binding);
 
-        $note_data = $this->fetch($originator_key, $note->getKey());
+        $note_data = $this->fetch($relationship_key, $note->getKey());
 
         return $note_data->view_count;
     }

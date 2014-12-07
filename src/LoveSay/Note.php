@@ -7,18 +7,18 @@ class Note
     /** @var string */
     private $message;
     /** @var int */
-    private $originator_key;
+    private $relationship_key;
     /** @var int */
     private $view_count;
 
     /**
-     * @param int    $originator_key
+     * @param int    $relationship_key
      * @param string $message
      * @param int    $view_count
      */
-    public function __construct($originator_key, $message, $view_count = 0)
+    public function __construct($relationship_key, $message, $view_count = 0)
     {
-        $this->originator_key = $originator_key;
+        $this->relationship_key = $relationship_key;
         $this->message = $message;
         $this->view_count = max((int)$view_count, 0);
     }
@@ -26,7 +26,7 @@ class Note
     /**
      * @return string
      */
-    public function message()
+    public function getMessage()
     {
         return $this->message;
     }
@@ -34,7 +34,7 @@ class Note
     /**
      * @return int
      */
-    public function viewCount()
+    public function getViewCount()
     {
         return $this->view_count;
     }
@@ -44,7 +44,7 @@ class Note
      */
     public function getKey()
     {
-        return $this->checksum($this->message() . $this->originator_key);
+        return $this->computeChecksum($this->getMessage() . $this->relationship_key);
     }
 
     /**
@@ -52,7 +52,7 @@ class Note
      */
     public function incrementViewCount()
     {
-        $this->view_count = $this->viewCount() + 1;
+        $this->view_count = $this->getViewCount() + 1;
 
         return $this->view_count;
     }
@@ -62,7 +62,7 @@ class Note
      *
      * @return int
      */
-    public static function checksum($data)
+    public static function computeChecksum($data)
     {
         return crc32($data);
     }
@@ -72,7 +72,7 @@ class Note
      */
     function __toString()
     {
-        return $this->message();
+        return $this->getMessage();
     }
 
 }

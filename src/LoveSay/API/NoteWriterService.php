@@ -4,19 +4,19 @@ namespace LoveSay\API;
 
 use LoveSay\Note;
 use LoveSay\NoteCollection;
-use LoveSay\Originator;
 use LoveSay\Persistence\NotesStorage;
+use LoveSay\Relationship;
 
 class NoteWriterService
 {
     /** @var int */
-    private $originator_key;
+    private $relationship_key;
     /** @var NotesStorage */
     private $storage;
 
-    public function __construct(Originator $originator, NotesStorage $storage)
+    public function __construct(Relationship $relationship, NotesStorage $storage)
     {
-        $this->originator_key = $originator->getKey();
+        $this->relationship_key = $relationship->getKey();
         $this->storage = $storage;
     }
 
@@ -25,8 +25,7 @@ class NoteWriterService
      */
     public function getCount()
     {
-
-        return $this->storage->count($this->originator_key);
+        return $this->storage->count($this->relationship_key);
     }
 
     /**
@@ -36,8 +35,8 @@ class NoteWriterService
      */
     public function getNote($note_key)
     {
-        if ($note_data = $this->storage->fetch($this->originator_key, $note_key)) {
-            return new Note($this->originator_key, $note_data->message);
+        if ($note_data = $this->storage->fetch($this->relationship_key, $note_key)) {
+            return new Note($this->relationship_key, $note_data->message);
         }
 
         return null;
@@ -52,9 +51,9 @@ class NoteWriterService
     {
         $note_data = array(
             'note_key'       => $note->getKey(),
-            'message'        => $note->message()
+            'message'        => $note->getMessage()
         );
-        return $this->storage->store($this->originator_key, $note_data);
+        return $this->storage->store($this->relationship_key, $note_data);
     }
 
     /**
@@ -62,12 +61,12 @@ class NoteWriterService
      */
     public function getAllNotes()
     {
-        $notes = $this->storage->fetchAll($this->originator_key);
+        $notes = $this->storage->fetchAll($this->relationship_key);
 
         $all_notes = new NoteCollection();
         /** @var object $note_data */
         foreach ($notes as $note_data) {
-            $all_notes->add(new Note($this->originator_key, $note_data->message));
+            $all_notes->add(new Note($this->relationship_key, $note_data->message));
         }
         return $all_notes;
     }
@@ -78,7 +77,7 @@ class NoteWriterService
     public function importFromArray(array $messages)
     {
         foreach ($messages as $message) {
-            $note = new Note($this->originator_key, $message);
+            $note = new Note($this->relationship_key, $message);
             $this->putNote($note);
         }
     }

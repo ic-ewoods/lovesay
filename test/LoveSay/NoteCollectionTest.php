@@ -39,15 +39,3 @@ class NoteCollectionTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(new NoteCollection() instanceof \Countable);
     }
 }
-
-
-///**
-// * @return Note
-// */
-//public function getRandomNote()
-//{
-//    $selection = rand(1, $this->getCount());
-//    $notes = $this->getAllNotes();
-//
-//    return $notes->get($selection - 1);
-//}

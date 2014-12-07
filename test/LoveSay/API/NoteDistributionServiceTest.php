@@ -2,63 +2,44 @@
 
 namespace test\LoveSay\API;
 
-use LoveSay\API\NoteReaderService;
+use LoveSay\API\NoteDistributionService;
 use LoveSay\API\NoteWriterService;
-use LoveSay\Note;
+use LoveSay\Freshness\Any;
+use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
 use LoveSay\Recipient;
 use LoveSay\Relationship;
 
-class NoteReaderServiceTest extends \PHPUnit_Framework_TestCase
+class NoteDistributionServiceTest extends \PHPUnit_Framework_TestCase
 {
-    /** @var NoteReaderService */
-    private $note_reader_api;
+    /** @var Relationship | \PHPUnit_Framework_MockObject_MockObject */
+    private $relationship;
+
+    /** @var NoteDistributionService */
+    private $note_distribution_api;
 
     /** @var NoteWriterService */
     private $note_writer_api;
 
-    /** @var Recipient | \PHPUnit_Framework_MockObject_MockObject */
-    private $relationship;
-
-    /**
-     *
-     */
     public function setup()
     {
         $this->relationship = $this->mockRelationship();
+        $this->storage = $this->getMockBuilder('\LoveSay\Persistence\NotesStorage')
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $sqliteNotesStorage = new SqliteNotesStorage();
+        $this->note_writer_api = new NoteWriterService($this->relationship->getKey(), $sqliteNotesStorage);
 
-        $this->note_writer_api = new NoteWriterService($this->relationship, $sqliteNotesStorage);
-        $this->note_reader_api = new NoteReaderService($this->relationship, $sqliteNotesStorage);
+        $this->note_distribution_api = new NoteDistributionService($this->relationship->getKey(), $sqliteNotesStorage);
     }
 
-    /**
-     * @test
-     */
-    public function canReadNote()
+    public function canGetNoteToDistribute()
     {
         $this->expectTwoNotes();
-        $note_key = Note::computeChecksum("Thing One" . 1);
-
-        $note = $this->note_reader_api->readNote($note_key);
+        $note = $this->note_distribution_api->getFreshNote($this->relationship, new Any());
 
         $this->assertInstanceOf('\LoveSay\Note', $note);
-    }
-
-    /**
-     * @test
-     */
-    public function readingNoteIncrementsViewCount()
-    {
-        $this->expectTwoNotes();
-        $note_key = Note::computeChecksum("Thing One" . 1);
-
-        $note1 = $this->note_reader_api->readNote($note_key);
-        $this->assertEquals(1, $note1->getViewCount());
-
-        $note2 = $this->note_reader_api->readNote($note_key);
-        $this->assertEquals(2, $note2->getViewCount());
     }
 
 

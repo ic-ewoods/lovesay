@@ -7,6 +7,7 @@ use LoveSay\Freshness\Any;
 use LoveSay\Note;
 use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
+use LoveSay\Relationship;
 
 class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,8 +15,8 @@ class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
     /** @var NoteWriterService */
     private $note_writer_api;
 
-    /** @var Originator | \PHPUnit_Framework_MockObject_MockObject */
-    private $originator;
+    /** @var Relationship | \PHPUnit_Framework_MockObject_MockObject */
+    private $relationship;
 
     /** @var SqliteNotesStorage | \PHPUnit_Framework_MockObject_MockObject */
     private $storage;
@@ -25,16 +26,12 @@ class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function setup()
     {
-        $this->originator = $this->getMockBuilder('\LoveSay\Originator')
-            ->disableOriginalConstructor()
-            ->getMock();
-        $this->originator->method('getKey')
-            ->willReturn(1);
+        $this->relationship = $this->mockRelationship();
         $this->storage = $this->getMockBuilder('\LoveSay\Persistence\NotesStorage')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->note_writer_api = new NoteWriterService($this->originator, new SqliteNotesStorage());
+        $this->note_writer_api = new NoteWriterService($this->relationship, new SqliteNotesStorage());
     }
 
     /**
@@ -42,7 +39,7 @@ class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function canBeInstantiated()
     {
-        $notes_api = new NoteWriterService($this->originator, $this->storage);
+        $notes_api = new NoteWriterService($this->relationship, $this->storage);
         $this->assertInstanceOf('\LoveSay\API\NoteWriterService', $notes_api);
     }
 
@@ -61,7 +58,7 @@ class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
     public function canAddNote()
     {
         $this->expectTwoNotes();
-        $note = new Note($this->originator->getKey(), 'Thing Three?');
+        $note = new Note($this->relationship->getKey(), 'Thing Three?');
 
         $this->assertEquals(2, $this->note_writer_api->getCount());
 
@@ -75,7 +72,7 @@ class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
     public function canGetNote()
     {
         $this->expectTwoNotes();
-        $note_key = Note::checksum("Thing One" . 1);
+        $note_key = Note::computeChecksum("Thing One" . 1);
         $this->assertInstanceOf('\LoveSay\Note', $this->note_writer_api->getNote($note_key));
     }
 
@@ -99,6 +96,20 @@ class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
             "Thing Two"
         );
         $this->note_writer_api->importFromArray($messages);
+    }
+
+    /**
+     * @return Relationship | \PHPUnit_Framework_MockObject_MockObject
+     */
+    private function mockRelationship()
+    {
+        $relationship = $this->getMockBuilder('\LoveSay\Relationship')
+            ->disableOriginalConstructor()
+            ->getMock();
+        $relationship->method('getKey')
+            ->willReturn(11);
+
+        return $relationship;
     }
 
 }

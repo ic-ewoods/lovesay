@@ -30,7 +30,7 @@ if ($import_filename = $getopt->get('-r')) {
     $note_api = new NoteWriterService($originator, new SqliteNotesStorage($storage_filename));
     $say = include $import_filename;
     foreach ($say as $message) {
-        $note = new Note($originator->getKey(), $message);
+        $note = new Note($recipient_key, $message);
         $note_key = $note_api->putNote($note);
         $stdio->outln("Added note: [key: {$note_key}] {$message}");
     }
@@ -40,7 +40,7 @@ if ($import_filename = $getopt->get('-r')) {
     $message = trim($stdio->in());
 
     if (!empty($message)) {
-        $note = new Note($originator->getKey(), $message);
+        $note = new Note($recipient_key, $message);
         $note_key = $note_api->putNote($note);
         $stdio->outln("Added note: [key: {$note_key}] {$message}");
     } else {

@@ -3,22 +3,22 @@
 namespace test\LoveSay;
 
 use LoveSay\Note;
-use LoveSay\Originator;
+use LoveSay\Relationship;
 
 class NoteTest extends \PHPUnit_Framework_TestCase
 {
     /** @var Note */
     private $note;
-    /** @var Originator | \PHPUnit_Framework_MockObject_MockObject */
-    private $originator;
+    /** @var Relationship | \PHPUnit_Framework_MockObject_MockObject */
+    private $relationship;
 
     public function setup()
     {
-        $this->originator = $this->getMockBuilder('\LoveSay\Originator')
+        $this->relationship = $this->getMockBuilder('\LoveSay\Relationship')
             ->disableOriginalConstructor()
             ->getMock();
-        $this->originator->method('getKey')
-            ->willReturn(1);
+        $this->relationship->method('getKey')
+            ->willReturn(11);
     }
 
     /**
@@ -26,7 +26,7 @@ class NoteTest extends \PHPUnit_Framework_TestCase
      */
     public function canBeInstantiated()
     {
-        $note = new Note($this->originator->getKey(), '');
+        $note = new Note($this->relationship->getKey(), '');
         $this->assertInstanceOf('\LoveSay\Note', $note);
     }
 
@@ -36,7 +36,7 @@ class NoteTest extends \PHPUnit_Framework_TestCase
     public function canGetText()
     {
         $this->expectNote('test note');
-        $this->assertEquals('test note', $this->note->message());
+        $this->assertEquals('test note', $this->note->getMessage());
     }
 
     /**
@@ -45,7 +45,7 @@ class NoteTest extends \PHPUnit_Framework_TestCase
     public function keyIsChecksum()
     {
         $this->expectNote('test');
-        $this->assertEquals(Note::checksum('test' . 1), $this->note->getKey());
+        $this->assertEquals(Note::computeChecksum('test' . 1), $this->note->getKey());
     }
 
     /** Expectations **************************************************** */
@@ -55,7 +55,7 @@ class NoteTest extends \PHPUnit_Framework_TestCase
      */
     private function expectNote($message)
     {
-        $this->note = new Note($this->originator->getKey(), $message);
+        $this->note = new Note($this->relationship->getKey(), $message);
     }
 }
  

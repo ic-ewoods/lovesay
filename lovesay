@@ -28,12 +28,12 @@ $note_reader_api = new NoteReaderService($recipient, $storage);
 if ($getopt->get('-a')) {
     $notes = $note_writer_api->getAllNotes();
     foreach ($notes as $note) {
-        $view_count = $getopt->get('-c', false) ? " [{$note->viewCount()}]" : '';
+        $view_count = $getopt->get('-c', false) ? " [{$note->getViewCount()}]" : '';
         $stdio->outln($note . $view_count);
     }
 } else {
     $freshness = new \LoveSay\Freshness\Any();
     $note = $note_reader_api->viewNote($freshness);
-    $view_count = $getopt->get('-c', false) ? " [{$note->viewCount()}]" : '';
+    $view_count = $getopt->get('-c', false) ? " [{$note->getViewCount()}]" : '';
     $stdio->outln($note . $view_count);
 }
