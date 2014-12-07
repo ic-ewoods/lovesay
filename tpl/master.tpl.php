@@ -8,7 +8,7 @@
     <div class="container">
         <div class="jumbotron">
             <h1>LoveSay</h1>
-            <p><?php echo 'Test' ?></p>
+            <p>PHP Inlude</p>
         </div>
     </div>
 </body>
