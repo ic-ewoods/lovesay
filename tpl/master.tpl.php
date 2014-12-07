@@ -1,6 +1,3 @@
-<?php
-
-?>
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -11,7 +8,7 @@
     <div class="container">
         <div class="jumbotron">
             <h1>LoveSay</h1>
-            <p><?= 'Test' ?></p>
+            <p><?php echo 'Test' ?></p>
         </div>
     </div>
 </body>
