@@ -1,3 +1,6 @@
+<?php
+/** @var stdClass $model */
+?>
 <!DOCTYPE html>
 <html>
 <head lang="en">
@@ -8,7 +11,7 @@
     <div class="container">
         <div class="jumbotron">
             <h1>LoveSay</h1>
-            <p>PHP Inlude</p>
+            <p><?= $model->content ?></p>
         </div>
     </div>
 </body>
