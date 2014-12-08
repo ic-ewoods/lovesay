@@ -8,4 +8,4 @@ $run = function() {
     return include 'tpl/master.tpl.php';
 };
 
-echo "nothing";
+echo $run();
