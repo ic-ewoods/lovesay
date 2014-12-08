@@ -1,0 +1,185 @@
+[
+    {
+        "name": "aura/cli",
+        "version": "2.0.1",
+        "version_normalized": "2.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/auraphp/Aura.Cli.git",
+            "reference": "85bf3ec15194c890da64f5888b8e08cf034ce044"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/auraphp/Aura.Cli/zipball/85bf3ec15194c890da64f5888b8e08cf034ce044",
+            "reference": "85bf3ec15194c890da64f5888b8e08cf034ce044",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2014-11-07 15:45:18",
+        "type": "library",
+        "extra": {
+            "aura": {
+                "type": "library",
+                "config": {
+                    "common": "Aura\\Cli\\_Config\\Common"
+                }
+            },
+            "branch-alias": {
+                "dev-develop-2": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Aura\\Cli\\": "src/",
+                "Aura\\Cli\\_Config\\": "config/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Aura.Cli Contributors",
+                "homepage": "https://github.com/auraphp/Aura.Cli/contributors"
+            }
+        ],
+        "description": "Provides the equivalent of request (Context) and response (Stdio) classes for a command line environment, including Getopt support.",
+        "homepage": "https://github.com/auraphp/Aura.Cli",
+        "keywords": [
+            "cli",
+            "command",
+            "command line",
+            "getopt",
+            "options",
+            "stdio"
+        ]
+    },
+    {
+        "name": "aura/sql",
+        "version": "2.1.0",
+        "version_normalized": "2.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/auraphp/Aura.Sql.git",
+            "reference": "b6cf73defca732c03d429942cf2b6c491511a360"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/auraphp/Aura.Sql/zipball/b6cf73defca732c03d429942cf2b6c491511a360",
+            "reference": "b6cf73defca732c03d429942cf2b6c491511a360",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2014-08-24 19:47:39",
+        "type": "library",
+        "extra": {
+            "aura": {
+                "type": "library"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Aura\\Sql\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Aura.Sql Contributors",
+                "homepage": "https://github.com/auraphp/Aura.Sql/contributors"
+            }
+        ],
+        "description": "A PDO extension that provides lazy connections, array quoting, identifier quoting, query profiling, value binding, and convenience methods for common fetch styles. Because it extends PDO, existing code that uses PDO can use this without any changes to the existing code.",
+        "homepage": "https://github.com/auraphp/Aura.Sql",
+        "keywords": [
+            "mysql",
+            "pdo",
+            "pgsql",
+            "postgres",
+            "postgresql",
+            "sql server",
+            "sqlite",
+            "sqlserver",
+            "sqlsrv"
+        ]
+    },
+    {
+        "name": "aura/sqlquery",
+        "version": "2.1.0",
+        "version_normalized": "2.1.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/auraphp/Aura.SqlQuery.git",
+            "reference": "72286cc7b928fe9884d603cabf4d5969b93cc3af"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/auraphp/Aura.SqlQuery/zipball/72286cc7b928fe9884d603cabf4d5969b93cc3af",
+            "reference": "72286cc7b928fe9884d603cabf4d5969b93cc3af",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "suggest": {
+            "aura/sql": "Provides an extension to the native PDO along with a profiler and connection locator. Use version 2.*."
+        },
+        "time": "2014-08-24 20:35:43",
+        "type": "library",
+        "extra": {
+            "aura": {
+                "type": "library"
+            },
+            "branch-alias": {
+                "dev-develop-2": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Aura\\SqlQuery\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Aura.SqlQuery Contributors",
+                "homepage": "https://github.com/auraphp/Aura.SqlQuery/contributors"
+            }
+        ],
+        "description": "Object-oriented query builders for MySQL, Postgres, SQLite, and SQLServer; can be used with any database connection library.",
+        "homepage": "https://github.com/auraphp/Aura.SqlQuery",
+        "keywords": [
+            "database",
+            "db",
+            "delete",
+            "dml",
+            "insert",
+            "mysql",
+            "pdo",
+            "pgsql",
+            "postgres",
+            "postgresql",
+            "query",
+            "select",
+            "sql",
+            "sql server",
+            "sqlite",
+            "sqlserver",
+            "update"
+        ]
+    }
+]

@@ -1,0 +1,98 @@
+<?php
+/**
+ *
+ * This file is part of Aura for PHP.
+ *
+ * @package Aura.SqlQuery
+ *
+ * @license http://opensource.org/licenses/bsd-license.php BSD
+ *
+ */
+namespace Aura\SqlQuery\Sqlite;
+
+use Aura\SqlQuery\Common;
+
+/**
+ *
+ * An object for Sqlite INSERT queries.
+ *
+ * @package Aura.SqlQuery
+ *
+ */
+class Insert extends Common\Insert
+{
+    /**
+     *
+     * Adds or removes OR ABORT flag.
+     *
+     * @param bool $enable Set or unset flag (default true).
+     *
+     * @return self
+     *
+     */
+    public function orAbort($enable = true)
+    {
+        $this->setFlag('OR ABORT', $enable);
+        return $this;
+    }
+
+    /**
+     *
+     * Adds or removes OR FAIL flag.
+     *
+     * @param bool $enable Set or unset flag (default true).
+     *
+     * @return self
+     *
+     */
+    public function orFail($enable = true)
+    {
+        $this->setFlag('OR FAIL', $enable);
+        return $this;
+    }
+
+    /**
+     *
+     * Adds or removes OR IGNORE flag.
+     *
+     * @param bool $enable Set or unset flag (default true).
+     *
+     * @return self
+     *
+     */
+    public function orIgnore($enable = true)
+    {
+        $this->setFlag('OR IGNORE', $enable);
+        return $this;
+    }
+
+    /**
+     *
+     * Adds or removes OR REPLACE flag.
+     *
+     * @param bool $enable Set or unset flag (default true).
+     *
+     * @return self
+     *
+     */
+    public function orReplace($enable = true)
+    {
+        $this->setFlag('OR REPLACE', $enable);
+        return $this;
+    }
+
+    /**
+     *
+     * Adds or removes OR ROLLBACK flag.
+     *
+     * @param bool $enable Set or unset flag (default true).
+     *
+     * @return self
+     *
+     */
+    public function orRollback($enable = true)
+    {
+        $this->setFlag('OR ROLLBACK', $enable);
+        return $this;
+    }
+}
