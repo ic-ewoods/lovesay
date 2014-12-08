@@ -45,7 +45,7 @@ class NoteTest extends \PHPUnit_Framework_TestCase
     public function keyIsChecksum()
     {
         $this->expectNote('test');
-        $this->assertEquals(Note::computeChecksum('test' . 1), $this->note->getKey());
+        $this->assertEquals(Note::computeChecksum('test' . $this->relationship->getKey()), $this->note->getKey());
     }
 
     /** Expectations **************************************************** */

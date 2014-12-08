@@ -6,6 +6,8 @@ use LoveSay\API\NoteWriterService;
 use LoveSay\Note;
 use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
+use LoveSay\Recipient;
+use LoveSay\Relationship;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -13,13 +15,17 @@ $cli_factory = new CliFactory;
 $stdio = $cli_factory->newStdio();
 $context = $cli_factory->newContext($GLOBALS);
 
-$getopt = $context->getopt(array('r:'));
+$getopt = $context->getopt(array('r:', 'n:', 'a', 'c'));
 
 $intro_text = 'lovesay: ' . \LoveSay\Description::express();
 $stdio->outln($intro_text);
 
+$storage = new SqliteNotesStorage(__DIR__ . '/say.sqlite3');
 $originator = new Originator('me');
-$storage_filename = __DIR__ . '/say.sqlite3';
+$recipient = new Recipient('you');
+$relationship = new Relationship($originator->getKey(), $recipient->getKey());
+
+$note_writer_api = new NoteWriterService($relationship, $storage);
 
 if ($import_filename = $getopt->get('-r')) {
     if (!is_readable($import_filename)) {
@@ -27,23 +33,28 @@ if ($import_filename = $getopt->get('-r')) {
         exit;
     }
     unlink($storage_filename);
-    $note_api = new NoteWriterService($originator, new SqliteNotesStorage($storage_filename));
+    $note_writer_api = new NoteWriterService($relationship, new SqliteNotesStorage($storage_filename));
     $say = include $import_filename;
     foreach ($say as $message) {
-        $note = new Note($recipient_key, $message);
-        $note_key = $note_api->putNote($note);
+        $note = new Note($relationship->getKey(), $message);
+        $note_key = $note_writer_api->putNote($note);
         $stdio->outln("Added note: [key: {$note_key}] {$message}");
     }
-} else {
-    $note_api = new NoteWriterService($originator, new SqliteNotesStorage($storage_filename));
+} elseif ($getopt->get('-n')) {
     $stdio->out('Add a note: ');
     $message = trim($stdio->in());
 
     if (!empty($message)) {
-        $note = new Note($recipient_key, $message);
-        $note_key = $note_api->putNote($note);
+        $note = new Note($relationship->getKey(), $message);
+        $note_key = $note_writer_api->putNote($note);
         $stdio->outln("Added note: [key: {$note_key}] {$message}");
     } else {
         $stdio->outln("No message added");
+    }
+} elseif ($getopt->get('-a', false)) {
+    $notes = $note_writer_api->getAllNotes();
+    foreach ($notes as $note) {
+        $view_count = $getopt->get('-c', false) ? " [{$note->getViewCount()}]" : '';
+        $stdio->outln($note . $view_count);
     }
 }

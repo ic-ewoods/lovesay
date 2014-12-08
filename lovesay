@@ -7,6 +7,7 @@ use LoveSay\API\NoteWriterService;
 use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
 use LoveSay\Recipient;
+use LoveSay\Relationship;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -14,26 +15,24 @@ $cli_factory = new CliFactory;
 $stdio = $cli_factory->newStdio();
 $context = $cli_factory->newContext($GLOBALS);
 
-$getopt = $context->getopt(array('all,a'));
+$getopt = $context->getopt(array('n:', 'c'));
 
 $intro_text = 'lovesay: ' . \LoveSay\Description::express();
 $stdio->outln($intro_text);
 
 $storage = new SqliteNotesStorage(__DIR__ . '/say.sqlite3');
 $originator = new Originator('me');
-$note_writer_api = new NoteWriterService($originator, $storage);
 $recipient = new Recipient('you');
-$note_reader_api = new NoteReaderService($recipient, $storage);
+$relationship = new Relationship($originator->getKey(), $recipient->getKey());
 
-if ($getopt->get('-a')) {
-    $notes = $note_writer_api->getAllNotes();
-    foreach ($notes as $note) {
-        $view_count = $getopt->get('-c', false) ? " [{$note->getViewCount()}]" : '';
-        $stdio->outln($note . $view_count);
+$note_reader_api = new NoteReaderService($relationship, $storage);
+
+if ($note_key = $getopt->get('-n', false)) {
+    $note = $note_reader_api->readNote($note_key);
+    if (is_null($note)) {
+        $stdio->outln("Your love is enduring. The note seems to be missing.");
+        exit;
     }
-} else {
-    $freshness = new \LoveSay\Freshness\Any();
-    $note = $note_reader_api->viewNote($freshness);
     $view_count = $getopt->get('-c', false) ? " [{$note->getViewCount()}]" : '';
     $stdio->outln($note . $view_count);
 }

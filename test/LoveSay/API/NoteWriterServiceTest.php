@@ -72,7 +72,7 @@ class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
     public function canGetNote()
     {
         $this->expectTwoNotes();
-        $note_key = Note::computeChecksum("Thing One" . 1);
+        $note_key = Note::computeChecksum("Thing One" . $this->relationship->getKey());
         $this->assertInstanceOf('\LoveSay\Note', $this->note_writer_api->getNote($note_key));
     }
 
@@ -84,6 +84,17 @@ class NoteWriterServiceTest extends \PHPUnit_Framework_TestCase
         $this->expectTwoNotes();
         $notes = $this->note_writer_api->getAllNotes();
         $this->assertEquals(2, $notes->count());
+    }
+
+    /**
+     * @test
+     */
+    public function getAllNotesIncludesViewCount()
+    {
+        $this->expectTwoNotes();
+        $first_note = $this->note_writer_api->getAllNotes()[0];
+        $this->assertObjectHasAttribute('view_count', $first_note);
+
     }
 
 

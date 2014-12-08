@@ -66,7 +66,7 @@ class NoteWriterService
         $all_notes = new NoteCollection();
         /** @var object $note_data */
         foreach ($notes as $note_data) {
-            $all_notes->add(new Note($this->relationship_key, $note_data->message));
+            $all_notes->add(new Note($this->relationship_key, $note_data->message, $note_data->view_count));
         }
         return $all_notes;
     }

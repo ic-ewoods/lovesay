@@ -3,6 +3,7 @@
 namespace LoveSay\API;
 
 use LoveSay\Note;
+use LoveSay\NoteCollection;
 use LoveSay\Persistence\NotesStorage;
 use LoveSay\Relationship;
 

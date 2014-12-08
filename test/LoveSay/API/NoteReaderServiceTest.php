@@ -39,7 +39,7 @@ class NoteReaderServiceTest extends \PHPUnit_Framework_TestCase
     public function canReadNote()
     {
         $this->expectTwoNotes();
-        $note_key = Note::computeChecksum("Thing One" . 1);
+        $note_key = Note::computeChecksum("Thing One" . $this->relationship->getKey());
 
         $note = $this->note_reader_api->readNote($note_key);
 
@@ -52,13 +52,19 @@ class NoteReaderServiceTest extends \PHPUnit_Framework_TestCase
     public function readingNoteIncrementsViewCount()
     {
         $this->expectTwoNotes();
-        $note_key = Note::computeChecksum("Thing One" . 1);
+        $note_key = Note::computeChecksum("Thing One" . $this->relationship->getKey());
 
         $note1 = $this->note_reader_api->readNote($note_key);
         $this->assertEquals(1, $note1->getViewCount());
 
         $note2 = $this->note_reader_api->readNote($note_key);
         $this->assertEquals(2, $note2->getViewCount());
+    }
+
+    public function readingNonExistentNoteReturnsNull()
+    {
+        $note = $this->note_reader_api->readNote('0');
+        $this->assertNull($note);
     }
 
 
