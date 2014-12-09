@@ -9,18 +9,19 @@ use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
 use LoveSay\Recipient;
 use LoveSay\Relationship;
 
-require __DIR__ . '/bootstrap.php';
+require dirname(__DIR__) . '/bootstrap.php';
 
 $cli_factory = new CliFactory;
 $stdio = $cli_factory->newStdio();
 $context = $cli_factory->newContext($GLOBALS);
 
-$getopt = $context->getopt(array('r:', 'n:', 'a', 'c'));
+$getopt = $context->getopt(array('r:', 'n:', 'a', 'c', 'i'));
 
 $intro_text = 'lovesay: ' . \LoveSay\Description::express();
 $stdio->outln($intro_text);
 
-$storage = new SqliteNotesStorage(__DIR__ . '/say.sqlite3');
+$storage_filename = dirname(__DIR__) . '/say.sqlite3';
+$storage = new SqliteNotesStorage($storage_filename);
 $originator = new Originator('me');
 $recipient = new Recipient('you');
 $relationship = new Relationship($originator->getKey(), $recipient->getKey());
@@ -54,7 +55,8 @@ if ($import_filename = $getopt->get('-r')) {
 } elseif ($getopt->get('-a', false)) {
     $notes = $note_writer_api->getAllNotes();
     foreach ($notes as $note) {
+        $id = $getopt->get('-i', false) ? "[{$note->getKey()}] " : '';
         $view_count = $getopt->get('-c', false) ? " [{$note->getViewCount()}]" : '';
-        $stdio->outln($note . $view_count);
+        $stdio->outln($id . $note . $view_count);
     }
 }

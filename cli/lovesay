@@ -3,13 +3,12 @@
 
 use Aura\Cli\CliFactory;
 use LoveSay\API\NoteReaderService;
-use LoveSay\API\NoteWriterService;
 use LoveSay\Originator;
 use LoveSay\Persistence\Sqlite\SqliteNotesStorage;
 use LoveSay\Recipient;
 use LoveSay\Relationship;
 
-require __DIR__ . '/bootstrap.php';
+require dirname(__DIR__) . '/bootstrap.php';
 
 $cli_factory = new CliFactory;
 $stdio = $cli_factory->newStdio();
@@ -20,7 +19,7 @@ $getopt = $context->getopt(array('n:', 'c'));
 $intro_text = 'lovesay: ' . \LoveSay\Description::express();
 $stdio->outln($intro_text);
 
-$storage = new SqliteNotesStorage(__DIR__ . '/say.sqlite3');
+$storage = new SqliteNotesStorage(dirname(__DIR__) . '/say.sqlite3');
 $originator = new Originator('me');
 $recipient = new Recipient('you');
 $relationship = new Relationship($originator->getKey(), $recipient->getKey());
